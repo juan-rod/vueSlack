@@ -21,7 +21,14 @@ const routes = [
 	},
 	{
 		path: '/',
-		component: Tchat
+		component: Tchat,
+		beforeEnter: (to, from, next) => {
+			if(!firebase.auth().currentUser){
+				next('/login');
+			}else{
+				next();
+			}
+		}
 	}
 ]
 const router = new VueRouter({routes})
@@ -39,9 +46,15 @@ const router = new VueRouter({routes})
 
   window.firebase = firebase;
 
-new Vue({
-  el: '#app',
-  router,
-  store,
-  render: h => h(App)
+const unsubscribe = firebase.auth().onAuthStateChanged(user => {
+	store.dispatch('setUser',user);
+
+	new Vue({
+	  el: '#app',
+	  router,
+	  store,
+	  render: h => h(App)
+	})
+	
 })
+

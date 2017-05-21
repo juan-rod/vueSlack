@@ -1,18 +1,25 @@
 <template>
-  <div id="">
-    <h1>tchat</h1>
+  <div class="tchat__container">
+  	<sidebar></sidebar>
+  	<messages></messages>
   </div>
 </template>
 
 <script>
+import Sidebar from "../components/Sidebar.vue";
+import Messages from "../components/Messages.vue";
 export default {
-  data () {
-    return {
-    }
-  }
+	name: 'tchat',
+	components: {Sidebar, Messages},
+	data () {
+		return {
+		}
+	}
 }
 </script>
 
-<style>
-
+<style scoped>
+	.tchat__container{
+		height: 100%;
+	}
 </style>
