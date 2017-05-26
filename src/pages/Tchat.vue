@@ -6,8 +6,8 @@
 </template>
 
 <script>
-import Sidebar from "../components/Sidebar.vue";
-import Messages from "../components/Messages.vue";
+import Sidebar from "../components/sidebar/Sidebar.vue";
+import Messages from "../components/messages/Messages.vue";
 export default {
 	name: 'tchat',
 	components: {Sidebar, Messages},

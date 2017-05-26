@@ -2,14 +2,16 @@
   <div class="sidebar">
   	<h1 class="ui inverted center aligned header">#Tuto::Slack#</h1>
   	<connected-user></connected-user>
+  	<channels></channels>
   </div>
 </template>
 
 <script>
-import ConnectedUser from './sidebar/ConnectedUser.vue'
+import ConnectedUser from './ConnectedUser.vue'
+import Channels from './Channels.vue'
 export default {
 	name: 'sidebar',
-	components: {ConnectedUser},
+	components: {ConnectedUser, Channels},
 	data () {
 		return {
 		}
