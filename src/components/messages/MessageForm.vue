@@ -30,7 +30,8 @@ export default {
 	name: 'message-form',
 	data () {
 		return {
-			message :''
+			message :'',
+			errors: []
 		}
 	},
 	computed: {
@@ -38,25 +39,24 @@ export default {
 	},
 	methods:{
 		sendMessage () {
-			console.log("message:", this.message);
 			let newMessage = {
 				content: this.message,
-				timeStamp: firebase.database.ServerValue.TIMESTAMP,
+				timestamp: firebase.database.ServerValue.TIMESTAMP,
 				user: {
 					name: this.currentUser.displayName,
 					avatar: true,
 					id: this.currentUser.uid
 				}
 			}
-			console.log("this.currentChannel.id:",this.currentChannel.id);
-			console.log("newMessage:",newMessage);
-			console.log("this.$parent.messageRef",this.$parent.messageRef);
-			console.log("this.$parent.messageRef.child(this.currentChannel.id)",this.$parent.messageRef.child(this.currentChannel.id));
-			this.$parent.messageRef.child(this.currentChannel.id).push().set(newMessage).then( () => {
 
-			}).catch( error => {
-				this.errors.push(error.message);
-			})
+			if(this.currentChannel !== null){
+				this.$parent.messageRef.child(this.currentChannel.id).push().set(newMessage).then( () => {
+
+				}).catch( error => {
+					this.errors.push(error.message);
+				})
+				
+			}
 
 			this.message = "";
 		}
