@@ -5,7 +5,7 @@
   			<div class="field">
   				<textarea name="message" 
   							id="message" 
-  							v-model="message"
+  							v-model.trim="message"
   							rows="3"
   							placeholder="Message">
   				</textarea>
@@ -39,7 +39,23 @@ export default {
 	},
 	methods:{
 		sendMessage () {
-			let newMessage = {
+
+			if(this.currentChannel !== null){
+
+				if(this.message.length > 0) {
+					this.$parent.messageRef.child(this.currentChannel.id).push().set(this.createMessage()).then( () => {
+
+					}).catch( error => {
+						this.errors.push(error.message);
+					})
+					
+					this.message = "";
+					
+				}
+			}
+		},
+		createMessage () {
+			return {
 				content: this.message,
 				timestamp: firebase.database.ServerValue.TIMESTAMP,
 				user: {
@@ -48,17 +64,6 @@ export default {
 					id: this.currentUser.uid
 				}
 			}
-
-			if(this.currentChannel !== null){
-				this.$parent.messageRef.child(this.currentChannel.id).push().set(newMessage).then( () => {
-
-				}).catch( error => {
-					this.errors.push(error.message);
-				})
-				
-			}
-
-			this.message = "";
 		}
 	}
 }
