@@ -63,7 +63,8 @@ export default {
 			password_confirmation: '',
 			errors:[],
 			usersRef: firebase.database().ref('users'),
-			isLoading: false
+			isLoading: false,
+			avatar: "https://api.adorable.io/avatars/285/abott@adorable.png"
 		}
 	},
 	computed: {
@@ -79,10 +80,13 @@ export default {
 				firebase.auth().createUserWithEmailAndPassword(this.email,this.password)
 								.then(user => {
 									user.updateProfile({
-										displayName: this.name
-										// photoUrl: "http://www.gravatar.com/avatar"+md5(user.email)+"?d=identicon"
+										displayName: this.name,
+										photoUrl: null
+										// photoUrl: "https://api.adorable.io/avatars/285/abott@adorable.png"
+
 									}).then ( () => {
 										this.saveUserToUsersRef(user).then( () =>{
+											console.log("user:",user);
 											this.$store.dispatch('setUser', user)
 											this.$router.push('/')
 										})
@@ -100,8 +104,13 @@ export default {
 			}
 		},
 		saveUserToUsersRef(user){
+			console.log("user:",user.uid);
+			console.log("user:",user.displayName);
+			console.log("user:",user.photoUrl);
+
 			return this.usersRef.child(user.uid).set({
-						name: user.displayName
+						name: user.displayName,
+						avatar: this.avatar
 						// avatar: user.photoUrl
 					})
 		},

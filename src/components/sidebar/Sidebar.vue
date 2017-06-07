@@ -4,7 +4,7 @@
   	<connected-user></connected-user>
   	<channels></channels>
   	<div class="ui divider">
-  		<users></users>
+  		<user></user>
   	</div>
   </div>
 </template>
@@ -12,12 +12,13 @@
 <script>
 import ConnectedUser from './ConnectedUser.vue'
 import Channels from './Channels.vue'
-import Users from './Users.vue'
+import User from './User.vue'
 export default {
 	name: 'sidebar',
-	components: {ConnectedUser, Channels, Users},
+	components: {ConnectedUser, Channels, User},
 	data () {
 		return {
+
 		}
 	}
 }

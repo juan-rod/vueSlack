@@ -1,7 +1,7 @@
 <template>
   <div class="messages_container">
   	<div class="messages_content">
-  		<h2 class="ui inverted center aligned header"> # Channel Name</h2>
+  		<h2 class="ui inverted center aligned header"> {{channelName}} </h2>
   		<div class="ui segment">
   			<div class="ui comments">
   				<transition-group tag="div" name="list">
@@ -28,16 +28,23 @@ export default {
 	data () {
 		return {
 			messageRef: firebase.database().ref('messages'),
+			privateMessageRef: firebase.database().ref('privateMessages'),
 			messages: [],
-			channel : null
+			channel : null,
+			listeners: []
 		}
 	},
 	computed: {
-		...mapGetters(['currentChannel','currentUser'])
+		...mapGetters(['currentChannel','currentUser', 'isPrivate']),
+		channelName(){
+			if(this.channel !== null){
+				return this.isPrivate ? '@'+ this.channel.name : '#' + this.channel.name
+			}
+		}
 	},
 	watch: {
 		currentChannel () {
-			this.messages = [];
+			
 
 			this.detachListeners();
 
@@ -48,16 +55,44 @@ export default {
 	},
 	methods: {
 		addListeners(){
-			// console.log("this.currentChannel.id:",this.currentChannel.id);
-			this.messageRef.child(this.currentChannel.id).on('child_added', snap => {
+			let ref = this.getMessageRef()
+			ref.child(this.currentChannel.id).on('child_added', snap => {
 				let message = snap.val()
 				message['id']=snap.key
 				this.messages.push(message)
+
+				this.$nextTick( () => {
+					$('html,body').scrollTop($(document).height())
+						
+				})
 			})
+			this.addToListeners(this.currentChannel.id, ref, 'child_added')
+		},
+		addToListeners(id, ref, event) {
+			let index = this.listeners.findIndex(el => {
+				return el.id === id && el.ref === ref && el.event === event
+			})
+			if(index === -1){
+				this.listeners.push({id: id, ref: ref, event: event})
+			}
 		},
 		detachListeners () {
-			if(this.channel !== null){
-				this.messageRef.child(this.channel.id).off('child_added')
+
+			this.listeners.forEach( listener => {
+				listener.ref.child(listener.id).off(listener.event)
+			})
+			this.listeners = []
+			this.messages = []
+
+			// if(this.channel !== null){
+			// 	this.messageRef.child(this.channel.id).off('child_added')
+			// }
+		},
+		getMessageRef () {
+			if(this.isPrivate){
+				return this.privateMessageRef;
+			}else {
+				return this.messageRef;
 			}
 		}
 	},
