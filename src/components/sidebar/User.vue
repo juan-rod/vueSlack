@@ -60,7 +60,7 @@
                         user['uid'] = snap.key
                         user['status'] = 'offline'
                         this.users.push(user)
-                        console.log("this.users:", this.users)
+                        // console.log("this.users:", this.users)
                     }else {
                         console.log("else this.users:", this.users)
                     }
@@ -98,7 +98,7 @@
                 }
             },            
             isOnline(user){
-                console.log("user is online?:", user);
+                // console.log("user is online?:", user);
                 // return true
                 return user.status == 'online'
             },
