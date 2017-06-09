@@ -12,7 +12,7 @@
   			</div>
   			<div class="field">
   				<button class="ui green button" @click.prevent="sendMessage">Send</button>
-  				<button class="ui labeled icon button">
+  				<button class="ui labeled icon button" @click.prevent="openFileModal">
   					<i class="cloud upload icon"></i>
   					File
   				</button>
@@ -20,22 +20,42 @@
   		</div>
   	</div>
 
+<!-- progress bar upload file -->
+	<div class="ui small orange inverted progress" data-total="100" id="uploadedFile">
+		<div class="bar">
+			<div class="progress">
+
+			</div>
+		</div>
+		<div class="label"></div>
+	</div>
+
+
+<!-- File Modal -->
+	<file-modal></file-modal>
 
   </div>
 </template>
 
 <script>
 import {mapGetters} from 'vuex'
+import FileModal from './FileModal.vue'
+import uuidV4 from 'uuid/V4'
 export default {
 	name: 'message-form',
+	components: {FileModal},
 	data () {
 		return {
 			message :'',
-			errors: []
+			errors: [],
+			storageRef: firebase.storage().ref(),
+			uploadTask: null,
+			uploadState: null
+
 		}
 	},
 	computed: {
-		...mapGetters(['currentChannel','currentUser'])
+		...mapGetters(['currentChannel','currentUser', 'isPrivate'])
 	},
 	methods:{
 		sendMessage () {
@@ -63,6 +83,43 @@ export default {
 					avatar: true,
 					id: this.currentUser.uid
 				}
+			}
+		},
+		uploadFile(file, metadata){
+			if(file === null) return false
+
+			let pathToUpload = this.currentChannel.id;
+			let ref = this.$parent.getMessageRef();
+			let filePath = this.getPath() + '/' + uuidV4() + '.jpg';
+
+			 // Upload Files 
+			 this.uploadTask = this.storageRef.child(filePath).put(file, metadata)
+			 this.uploadState = 'uploading';
+
+			 this.uploadTask.on('state_changed', snap => {
+			 	// uploading
+			 	let percent = (snap.bytesTransferred / snap.totalBytes)* 100;
+			 	$('#uploadedFile').progress("set percent", percent)
+
+			 }, error => {
+			 	// error
+
+			 }, () => {
+			 	// upload finished
+
+			 })
+
+
+
+		},
+		openFileModal () {
+			$('#fileModal').modal('show')
+		},
+		getPath(){
+			if(this.isPrivate) {
+				return 'tchat/private/' + this.currentChannel.id
+			}else {
+				return 'tchat/public/'
 			}
 		}
 	}
