@@ -7,7 +7,7 @@
         <div class="content">
             <div class="description">
                 <div class="ui header">Choose a file <em>( jpg, png, 1 mb max )</em></div>
-                <form class="ui form">
+                <form class="ui form" id="form">
                     <div class="field">
                         <input type="file" name="file" id="file" @change="addFile">
                     </div>
@@ -62,11 +62,12 @@
             },
             resetForm(){
                 console.log("reset form")
-                $('.form').trigger('reset')
+                $('#form').trigger('reset')
                 this.file = null
             }
         }
     }
+
 </script>
 
 <style scoped>
